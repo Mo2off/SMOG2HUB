@@ -256,3 +256,100 @@ extension Color {
         )
     }
 }
+
+
+struct ServiceCardView: View {
+        let service: ServiceItem
+        let onStart: () -> Void
+        let onStop: () -> Void
+        let onRestart: () -> Void
+        let onOpenTerminal: () -> Void
+
+        var body: some View {
+                    VStack(alignment: .leading, spacing: 12) {
+                                    HStack {
+                                                        VStack(alignment: .leading, spacing: 4) {
+                                                                                Text(service.name)
+                                                                                    .font(.headline)
+                                                                                    .foregroundColor(.primary)
+                                                                                Text("Port: \(service.port)")
+                                                                                    .font(.caption)
+                                                                                    .foregroundColor(.secondary)
+                                                        }
+                                                        Spacer()
+
+                                                        Text(service.status.displayName)
+                                                            .font(.caption)
+                                                            .bold()
+                                                            .padding(.horizontal, 8)
+                                                            .padding(.vertical, 4)
+                                                            .background(statusColor.opacity(0.2))
+                                                            .foregroundColor(statusColor)
+                                                            .cornerRadius(8)
+                                    }
+
+                                    Text(service.description)
+                                        .font(.body)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(2)
+
+                                    HStack(spacing: 16) {
+                                                        Label("\(String(format: "%.1f", service.cpuUsage))%", systemImage: "cpu")
+                                                        Label("\(String(format: "%.1f", service.ramUsageMB)) MB", systemImage: "waveform")
+                                                        Label("\(formatUptime(service.uptimeSeconds))", systemImage: "clock")
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+
+                                    Divider()
+
+                                    HStack {
+                                                        Button(action: onOpenTerminal) {
+                                                                                Label("Console", systemImage: "terminal")
+                                                        }
+                Spacer()
+
+                                                        if service.status == .stopped {
+                                                                                Button(action: onStart) {
+                                                                                                            Label("Demarrer", systemImage: "play.fill")
+                                                                                                                .foregroundColor(.green)
+                                                                                }
+                                                        } else if service.status == .running {
+                                                                                Button(action: onRestart) {
+                                                                                                            Label("Relancer", systemImage: "arrow.clockwise")
+                                                                                                                .foregroundColor(.blue)
+                                                                                }
+
+                                                                                Spacer()
+
+                                                                                Button(action: onStop) {
+                                                                                                            Label("Arreter", systemImage: "stop.fill")
+                                                                                                                .foregroundColor(.red)
+                                                                                }
+                                                        }
+                                    }
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(12)
+        }
+
+        private var statusColor: Color {
+                    switch service.status {
+                                case .running: return .green
+                                case .stopped: return .red
+                                case .transitioning: return .orange
+                                case .error: return .red
+                    }
+        }
+
+        private func formatUptime(_ seconds: Int) -> String {
+                    let hours = seconds / 3600
+                    let minutes = (seconds % 3600) / 60
+                    if hours > 0 {
+                                    return "\(hours)h \(minutes)m"
+                    } else {
+                                    return "\(minutes)m"
+                    }
+        }
+}
