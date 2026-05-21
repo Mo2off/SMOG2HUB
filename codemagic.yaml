@@ -1,0 +1,21 @@
+workflows:
+  ios-workflow:
+    name: SMOG2HUB iOS Native App
+    instance_type: mac_mini_m1
+    max_build_duration: 30
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+    scripts:
+      - name: Initialize Keychain
+        script: |
+          keychain initialize
+      - name: Build iOS App (.ipa)
+        script: |
+          xcode-project build-ipa \
+            --project "SwiftUI-MVVM-Template.xcodeproj" \
+            --scheme "SwiftUI-MVVM-Template"
+    artifacts:
+      - build/ios/ipa/*.ipa
