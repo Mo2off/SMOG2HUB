@@ -73,7 +73,12 @@ struct HomeView: View {
                 SettingsView()
             }
             .sheet(item: $selectedTerminalService) { service in
-                DetailsView(service: service) // We use DetailsView.swift which is our live logs terminal!
+                if #available(iOS 14.0, *) {
+                    DetailsView(service: service) // We use DetailsView.swift which is our live logs terminal!
+                } else {
+                    Text("La vue des logs requiert iOS 14.0+")
+                        .foregroundColor(.white)
+                }
             }
         }
     }

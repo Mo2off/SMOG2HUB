@@ -9,6 +9,7 @@ struct LogLine: Identifiable {
 }
 
 /// A fully functional custom native terminal view displaying active logs piped from WebSockets.
+@available(iOS 14.0, *)
 struct DetailsView: View {
     let service: ServiceItem
     @Environment(\.presentationMode) var presentationMode
